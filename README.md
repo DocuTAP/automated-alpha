@@ -3,7 +3,8 @@ This project is used to automate the DocuTAP PM/EMR Alpha process on a Windows
 server in both TierPoint and AWS. Currently, this application will download and 
 extract a database based on the config.yml file, scrub(anonymize) the database, 
 and run any complimentary restore scripts. To execute the application, simply 
-verify that Ruby is included in your Windows PATH and run the following command: 
+verify that Ruby is included in your Windows PATH and run the following command 
+from the directory of restore.Backup.rb: 
 **ruby restoreBackup.rb**.
 
 ## Purpose
