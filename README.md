@@ -1,6 +1,7 @@
 # Automated Alpha Prep
 This project is used to automate the DocuTAP PM/EMR Alpha process on a Windows 
-server in both TierPoint and AWS. Currently, this application will download and 
+server in both TierPoint and AWS. This assumes backups are arlready taken of the 
+source database. Currently, this application will download and 
 extract a database based on the config.yml file, scrub(anonymize) the database, 
 and run any complimentary restore scripts. To execute the application, simply 
 verify that Ruby is included in your Windows PATH and run the following command 
@@ -17,6 +18,9 @@ file).
 
 ## Requirements
 - Ruby 2.3+
+    - Ruby Window installer: https://rubyinstaller.org/downloads/
+    - generally speaking 2.33 64bit should suffice
+    - file utils is not needed for version 2.3 : https://github.com/ruby/fileutils/issues/2 
 - Gems
     - fileutils: used for file operations
     - sys-filesystem: used for checking the size of a directory
@@ -101,12 +105,19 @@ contain a config.yml file that allows the application to be customized.
     - Example: 'DocuTAP'
                'DocuTAP-RX'
 - Scrubber: 
+    - Database retore and scrub on Database server only
+    - Database scrubber: \\10.240.4.201\Release_File01\Deploy\exe\Automated\5.13.0\Scripts
     - The scrubber to be ran post database restore. Currently, this is utilized 
       to anonymize the database prior to turning on any application features. 
       The full file path and the paramaters to be passed to the script must be 
       specified.
     - Example: 'R:\Scrubbers\Scrubber.r'
                '-param "AWS|NO~DisplayMessages|NO~MachineType|2~ScrubType|3~ManuallyEditControls|NO~AppPath|D:\Progress\Wrk~SysOdbc|docutap"'
+    - might need seed files
+    - Copy alpha prep script to server: example, DT038 - D:\Deploy\Automated_Alpha
+    - Copy database scrubber to server: example, DT038 - D:\Deploy\Automated_Alpha\5.13_Scripts
+    - Copy seed files to server: example, DT038 - D:\Progress\Wrk\*.d
+    - check scrubber log at d:\progress\wrk\db\scrubber.log
 - Output Log File Path:
     - The directory to which the stdout log files can be written to. This 
       functionality exists in the code, but is not being utilized. 
@@ -115,6 +126,10 @@ contain a config.yml file that allows the application to be customized.
     - The directory to which the stderr log files can be written to. This 
       functionality exists in the code, but is not being utilized. 
     - Example: 'D:\Deploy\Workspace\BackupRestoreErrorLogs\'
+
+## Running
+- run ruby script (ruby "path\to\script\script_name.rb")
+	- from CMD: ruby "D:\Deploy\Automated_Alpha\restoreFromBackup.rb"
 
 ## Post-Conditions
 Upon successful execution of this application, the Progress database server will 
