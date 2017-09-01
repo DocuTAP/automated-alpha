@@ -130,6 +130,8 @@ contain a config.yml file that allows the application to be customized.
 ## Running
 - run ruby script (ruby "path\to\script\script_name.rb")
 	- from CMD: ruby "D:\Deploy\Automated_Alpha\restoreFromBackup.rb"
+- This runs from the db server
+- Run Stop job from CLU to bring site down
 
 ## Post-Conditions
 Upon successful execution of this application, the Progress database server will 

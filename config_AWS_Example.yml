@@ -1,0 +1,32 @@
+Database Directory: 'D:\Docutap\Wrk\db\'
+Database Name: 'docutap'
+Database Structure Name: 'docutap'
+OpenEdge Install Directory: 'D:\Progress\OpenEdge\'
+AWS Database Server: true
+Backup Extract Location: 'F:\Replication\'
+Backup Location: '\\hsbkpwfs001\AD\CA029\AI\'
+Database Poll Attempts: '10'
+Progress AppServers:
+        - 'DashboardAS'
+        - 'DtapAS'
+        - 'DtapAS-RX'
+        - 'DtapAS1'
+        - 'SeamlessAS'
+Services:
+        - 'Docutap eRx Server'
+        - 'Docutap Attentive'
+        - 'Docutap IM'
+        - 'Docutap Relentless'
+        - 'Docutap Seamless'
+        - 'DtapHL7'
+        - 'DtapFileTransporter'
+Progress Databases:
+        - 'DocuTAP'
+        - 'DocuTAP-RX'
+
+Scrubber:
+        File Path: 'F:\Scrubbers\Scrubber.r'
+        Params: '-param "AWS|YES~DisplayMessages|NO~MachineType|2~ScrubType|3~ManuallyEditControls|NO~AppPath|D:\Docutap\Wrk~SysOdbc|docutap"'
+
+Output Log File Path: 'D:\Deploy\Workspace\BackupRestoreOutputLogs\'
+Error Log File Path: 'D:\Deploy\Workspace\BackupRestoreErrorLogs\'
