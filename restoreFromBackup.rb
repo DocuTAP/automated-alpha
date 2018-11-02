@@ -359,9 +359,9 @@ def getExtractedBackupSizeAndName(fullBackupPath, bakFileFolder)
 	logEvent("back file length: %s" % bakFileFolder.to_s.length, false, false)
 	
 	if bakFileFolder.to_s.length > 0 then
-		fileName = stdout[(/(?<=(Name: ))#{Regexp.escape(bakFileFolder)}\w*.bak/)]
+		fileName = stdout[(/(?<=(Name: ))#{Regexp.escape(bakFileFolder)}[a-zA-Z0-9_-]*.bak/)]
 	else
-		fileName = stdout[(/(?<=(Name: ))\w*.bak/)]
+		fileName = stdout[(/(?<=(Name: ))[a-zA-Z0-9_-]*.bak/)]
 	end
 	
 	sizeMb = stdout[(/(?<=(Size: ))\d*/)].to_f / 1048576
