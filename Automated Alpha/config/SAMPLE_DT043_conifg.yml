@@ -1,0 +1,27 @@
+Database Directory: 'D:\Docutap\DT043\Wrk\DB\'
+Database Name: 'docutap'
+Database Structure Name: 'docutap'
+OpenEdge Install Directory: 'D:\Progress\OpenEdge\'
+AWS Database Server: true
+AWS Backup Site ID: ''
+Backup Extract Location: 'D:\Docutap\DT043\bkpextract\replication\'
+Backup Location: ''
+BAK File Path: ''
+Existing Database Backup Path: 'D:\Docutap\DT043\bkpextract\SOMETHING.bak'
+Database Poll Attempts: '10'
+Progress AppServers:
+        - 'DT043-DashboardAS'
+        - 'DT043-DtapAPI'
+        - 'DT043-DtapAS'
+        - 'DT043-DtapAS1'
+        - 'DT043-SeamlessAS'
+Services:
+        - 'DocuTAP DT043 Messaging'
+        - 'DocuTAP DT043 Relentless'
+        - 'DocuTAP DT043 Seamless'
+Progress Databases:
+        - 'DT043-docutap'
+Scrubber:
+        File Path: 'D:\Deploy\Workspace\AutomatedAlpha\6.0_Scripts\StartScrubberCommandLine.r'
+        Params: '-param "AWS|YES~ClearPropathPre|false~DisplayMessages|NO~MachineType|1~ScrubType|3~ManuallyEditControls|NO~AppPath|D:\Docutap\Wrk~SysOdbc|docutap"'
+Output Log File Path: 'D:\Deploy\Workspace\AutomatedAlpha\DT043-BackupRestore.log'
