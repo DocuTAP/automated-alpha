@@ -1,9 +1,9 @@
 require 'sys/filesystem'
 require 'yaml'
 require 'open3'
-require 'socket'
+require 'logger'
 
-$log_file_path = 'unknown'
+$log_file_path = 'AutomatedAlpha.log'
 
 # These steps are in order of when they should typically be performed.  Modify this section to only run certain steps.
 $download_aws_database_backup = false
@@ -17,12 +17,12 @@ $start_databases = false
 $scrub_database_and_run_progress_files = false
 $start_app_servers = false
 $start_services = false
-$delete_database_backup_file = false
-$delete_extracted_database_file = false
 
 # Runs the application.
-def run
-  config = YAML.load_file(File.expand_path('config.yml', File.dirname(__FILE__)))
+def run(config_file_name)
+  config = YAML.load_file(File.expand_path(config_file_name, File.dirname(__FILE__)))
+  database_server_name = config['Database Server Name']
+  broker_service_name = config['Broker Service Name']
   database_directory = config['Database Directory']
   database_file_name = config['Database Name']
   database_full_path = config['Database Directory'] + database_file_name
@@ -43,6 +43,9 @@ def run
   database_space = get_drive_space(database_directory) # 'get_drive_space' causes an error on DT031.  I believe DT031 has a different version of the sys/filesystem Gem.
   extract_location_space = get_drive_space(extract_location) # 'get_drive_space' causes an error on DT031.  I believe DT031 has a different version of the sys/filesystem Gem.
   $log_file_path = config['Output Log File Path']
+
+  $logger = Logger.new($log_file_path)
+  $logger.level = Logger::INFO
 
   log_event('Script - STARTING', false, true)
 
@@ -134,7 +137,7 @@ def run
 
   if $scrub_database_and_run_progress_files
     log_event('Scrub database and run Progress files - STARTING', false, true)
-    run_progress_files(openedge_directory, scrubber_file_path, scrubber_parameters, database_directory, database_file_name)
+    run_progress_files(openedge_directory, scrubber_file_path, scrubber_parameters, database_directory, database_file_name, database_server_name, broker_service_name)
     log_event('Scrub database and run Progress files - COMPLETED', false, false)
   end
 
@@ -148,20 +151,6 @@ def run
     log_event('Start services - STARTING', false, true)
     start_docutap_services(service_list)
     log_event('Start services - COMPLETED', false, false)
-  end
-
-  if $delete_database_backup_file
-    if is_aws
-      log_event('Deleting database backup file copied from AWS S3 - STARTING', false, true)
-      delete_file(full_backup_path)
-      log_event('Deleting database backup file copied from AWS S3 - COMPLETED', false, false)
-    end
-  end
-
-  if $delete_extracted_database_file
-    log_event('Deleting extracted database backup file - STARTING', false, true)
-    delete_file(bak_file_path)
-    log_event('Deleting extracted database backup file - COMPLETED', false, false)
   end
 
   log_event('Script - COMPLETED', false, true)
@@ -570,7 +559,9 @@ end
 # @param scrubber_file_path [String] the path to the scrubber utility.
 # @param database_directory [String] the directory of the database to be scrubbed.
 # @param database_file_name [String] the name of the database to be scrubbed.
-def run_progress_files(openedge_directory, scrubber_file_path, scrubber_parameters, database_directory, database_file_name)
+# @param database_server_name [String] the name of the database server.
+# @param broker_service_name [String] The service name of the broker process.
+def run_progress_files(openedge_directory, scrubber_file_path, scrubber_parameters, database_directory, database_file_name, database_server_name, broker_service_name)
 
 =begin
   _progres.exe paramaters:
@@ -586,9 +577,8 @@ def run_progress_files(openedge_directory, scrubber_file_path, scrubber_paramete
 =end
 
   database = database_directory + database_file_name + '.db'
-  local_ip = IPSocket.getaddress(Socket.gethostname).to_s
 
-  cmd = '"' << openedge_directory << 'bin\\_progres.exe" -p ' << scrubber_file_path << ' ' << scrubber_parameters << ' -H ' << local_ip << ' -S dtap-4gl' << ' -db ' << database << ' -mmax 8000 -U sysprogress -P docutap -debugalert -noinactiveidx' << ' -D 15000 -s 128 -b '
+  cmd = '"' << openedge_directory << 'bin\\_progres.exe" -p ' << scrubber_file_path << ' ' << scrubber_parameters << ' -H ' << database_server_name << ' -S ' << broker_service_name << ' -db ' << database << ' -mmax 8000 -U sysprogress -P docutap -debugalert -noinactiveidx' << ' -D 15000 -s 128 -b '
 
   Dir.chdir(database_directory) do
     log_event('Starting scrubber.', false, false)
@@ -622,26 +612,20 @@ end
 # @param abort_script [Boolean] true to exit the Ruby script, false if not.
 # @param add_section_break [Boolean] true to add a visual 'break' to the log, false if not.
 def log_event(message, abort_script, add_section_break)
-  File.open($log_file_path, 'a') do |f|
-    $stderr = f
-    $stdout = f
-
-    current_time = Time.new
-
-    if add_section_break
-      puts '************************************************************************************************************************'
-    end
-
-    if abort_script
-      puts current_time.inspect + ' ABORT: ' + message.to_s
-    else
-      puts current_time.inspect + ' ' + message.to_s
-    end
+  if add_section_break
+    $logger.info('************************************************************************************************************************')
   end
 
   if abort_script
-    abort("ABORT: %s" % message)
+    $logger.fatal(message.to_s)
+    raise message.to_s
+  else
+    $logger.info(message.to_s)
   end
 end
 
-run
+if ARGV.empty?
+  puts "ERROR RUNNING SCRIPT: Please pass the configuration YAML file name as a command parameter."
+else
+  run(ARGV[0])
+end

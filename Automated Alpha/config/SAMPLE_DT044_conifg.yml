@@ -1,0 +1,30 @@
+Database Server Name: 'DT044-DB.docutap.local'
+Broker Service Name: '37235'
+Database Directory: 'D:\Docutap\DT044\Wrk\DB\'
+Database Name: 'docutap'
+Database Structure Name: 'DT044-docutap'
+OpenEdge Install Directory: 'D:\Progress\OpenEdge\'
+AWS Database Server: true
+AWS Backup Site ID: 'IN005'
+Backup Extract Location: 'D:\Docutap\DT044\bkpextract\replication\'
+Backup Location: ''
+BAK File Path: ''
+Existing Database Backup Path: 'D:\Docutap\DT044\bkpextract\replication\20190504_221215_IN005_PMDBETV001-073_docutap_F.bak'
+Database Poll Attempts: '10'
+Progress AppServers:
+        - 'DT044-DashboardAS'
+        - 'DT044-DtapAPI'
+        - 'DT044-DtapAS'
+        - 'DT044-DtapAS1'
+        - 'DT044-SeamlessAS'
+Services:
+        - 'DocuTAP DT044 Messaging'
+        - 'DocuTAP DT044 Relentless'
+        - 'DocuTAP DT044 Seamless'
+Progress Databases:
+        - 'DT044-docutap'
+Scrubber:
+        File Path: 'D:\Deploy\Workspace\AutomatedAlpha\5.17_Scripts\StartScrubberCommandLine.r'
+        Params: '-param "AWS|YES~ClearPropathPre|false~DisplayMessages|NO~MachineType|1~ScrubType|3~ManuallyEditControls|NO~AppPath|D:\Docutap\DT044\Wrk~SysOdbc|docutap"'
+
+Output Log File Path: 'D:\Deploy\Workspace\AutomatedAlpha\DT044-BackupRestore.log'

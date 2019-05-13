@@ -32,6 +32,16 @@ file).
 This application does not accept any command line paramaters, however, it does 
 contain a config.yml file that allows the application to be customized.
 
+- Database Server Name:
+    - The name of the database server, including the ".docutap.local".
+    - Example: DT043-DB.docutap.local
+- Broker Service Name:
+    - The value to use for the _progres.exe "-S" option.
+    - Example: 37235
+        - This can be found by opening
+          the D:\Progress\OpenEdge\properties\conmgr.properties file and 
+          getting the "port" value from the
+          "[servergroup.dt043-docutap.defaultconfiguration.4gl]" section
 - Database Directory:
     - The directory to with the Progress database is to be restored to. The 
       application will automatically check whether there is enough storage space
@@ -74,7 +84,8 @@ contain a config.yml file that allows the application to be customized.
     - Example: '\\SFSDWDBBKP001\Progress E-M\FL027\AI\'
 - Existing Database Backup Path
     - The path to an existing database backup file to be used for database restore.
-    - Example: 'D:\Docutap\DT043\bkpextract\SOMETHING.bak'
+    - Example: 'D:\Docutap\DT043\bkpextract\replication\20190504_221215_IN005_PMDBETV001-073_docutap_F.bak'
+    - NOTE: If you want to download the latest .RAR file from S3, leave this empty.
 - Database Poll Attempts: 
     - The number of times (int) the database will be polled to verify that it is
       not in use, and is ready to restore. The reason for this is that when a 
@@ -112,7 +123,7 @@ contain a config.yml file that allows the application to be customized.
       The full file path and the paramaters to be passed to the script must be 
       specified.
     - Example: File Path: 'D:\Deploy\Workspace\AutomatedAlpha\6.0_Scripts\StartScrubberCommandLine.r'
-               Params: '-param "AWS|YES~ClearPropathPre|false~DisplayMessages|NO~MachineType|1~ScrubType|3~ManuallyEditControls|NO~AppPath|D:\Docutap\Wrk~SysOdbc|docutap"'
+               Params: '-param "AWS|YES~ClearPropathPre|false~DisplayMessages|NO~MachineType|1~ScrubType|3~ManuallyEditControls|NO~AppPath|D:\Docutap\DT043\Wrk~SysOdbc|docutap"'
     - Might need seed files
     - Copy alpha prep script to server: example, DT043 - D:\Deploy\Workspace\AutomatedAlpha
     - Copy database scrubber to server: example, DT043 - D:\Deploy\Workspace\AutomatedAlpha\6.0_Scripts
