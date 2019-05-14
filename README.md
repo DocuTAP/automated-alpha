@@ -123,7 +123,7 @@ contain a config.yml file that allows the application to be customized.
       The full file path and the paramaters to be passed to the script must be 
       specified.
     - Example: File Path: 'D:\Deploy\Workspace\AutomatedAlpha\6.0_Scripts\StartScrubberCommandLine.r'
-               Params: '-param "AWS|YES~ClearPropathPre|false~DisplayMessages|NO~MachineType|1~ScrubType|3~ManuallyEditControls|NO~AppPath|D:\Docutap\DT043\Wrk~SysOdbc|docutap"'
+               Params: '-param "AWS|YES\~ClearPropathPre|false\~DisplayMessages|NO~MachineType|1\~ScrubType|3\~ManuallyEditControls|NO\~AppPath|D:\Docutap\DT043\Wrk\~SysOdbc|docutap"'
     - Might need seed files
     - Copy alpha prep script to server: example, DT043 - D:\Deploy\Workspace\AutomatedAlpha
     - Copy database scrubber to server: example, DT043 - D:\Deploy\Workspace\AutomatedAlpha\6.0_Scripts
