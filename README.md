@@ -6,7 +6,7 @@ extract a database based on the config.yml file, scrub(anonymize) the database,
 and run any complimentary restore scripts. To execute the application, simply 
 verify that Ruby is included in your Windows PATH and run the following command 
 from the directory of restore.Backup.rb: 
-**ruby restoreBackup.rb**.
+**ruby restore_from_backup.rb**.
 
 ## Purpose
 The purpose of this project is to increase the efficiency of the alpha prep
@@ -24,7 +24,7 @@ file).
 - Gems
     - fileutils: used for file operations
     - sys-filesystem: used for checking the size of a directory
-- config.yml
+- SiteId_config.yml
     - Before the application can be ran, a config.yml file must be configured. 
       The configurations for this file are denoted below.
       
@@ -32,12 +32,22 @@ file).
 This application does not accept any command line paramaters, however, it does 
 contain a config.yml file that allows the application to be customized.
 
+- Database Server Name:
+    - The name of the database server, including the ".docutap.local".
+    - Example: DT043-DB.docutap.local
+- Broker Service Name:
+    - The value to use for the _progres.exe "-S" option.
+    - Example: 37235
+        - This can be found by opening
+          the D:\Progress\OpenEdge\properties\conmgr.properties file and 
+          getting the "port" value from the
+          "[servergroup.dt043-docutap.defaultconfiguration.4gl]" section
 - Database Directory:
     - The directory to with the Progress database is to be restored to. The 
       application will automatically check whether there is enough storage space
       to extract from a backup. A backslash must be appended to the end of the 
       string. 
-    - Example: 'D:\Progress\Wrk\db\'
+    - Example: 'D:\Docutap\DT043\Wrk\DB\'
 - Database Name:
     - The name of the Progress database which is to be restored. (Note: This 
       does not include the filename extension which is typically .db)
@@ -49,18 +59,22 @@ contain a config.yml file that allows the application to be customized.
     - Example: 'docutap'
 - OpenEdge Install Directory:
     - The full directory path to which Progress OpenEdge is installed.
-    - Example: 'C:\Program Files\OpenEdge\'
+    - Example: 'D:\Progress\OpenEdge\'
 - AWS Database Server:
     - A boolean value to say whether the Progress database server is located in 
       AWS. This is used to determine where to pull the backups from.
-    - Example: 'false'
+    - Example: 'true'
+- AWS Backup Site ID:
+    - The Site ID (or Clinic ID) of the site.
+    - Example: 'AL002'
 - Backup Extract Location:
     - The location from which the Progress database full backup is to be
       extracted to before being restored. Currently, the application extracts 
       over a network to the specified location. This is a storage over 
       performance sacrifice.
-    - Example: 'R:\Replication\'
+    - Example: 'D:\Docutap\DT043\bkpextract\replication\'
 - Backup Location:
+    - For TierPoint sites only!
     - The location from which the Progress database full backup is to be 
       extracted from. This assumes the backup file at this location is 
       compressed as a .rar and follows the naming convention 
@@ -68,6 +82,10 @@ contain a config.yml file that allows the application to be customized.
       within the directory that follows this naming convention, it is not 
       guaranteed which will be extracted.
     - Example: '\\SFSDWDBBKP001\Progress E-M\FL027\AI\'
+- Existing Database Backup Path
+    - The path to an existing database backup file to be used for database restore.
+    - Example: 'D:\Docutap\DT043\bkpextract\replication\20190504_221215_IN005_PMDBETV001-073_docutap_F.bak'
+    - NOTE: If you want to download the latest .RAR file from S3, leave this empty.
 - Database Poll Attempts: 
     - The number of times (int) the database will be polled to verify that it is
       not in use, and is ready to restore. The reason for this is that when a 
@@ -81,28 +99,21 @@ contain a config.yml file that allows the application to be customized.
 - Progress AppServers: 
     - The appservers utilized by OpenEdge. These will be stopped and started 
       before and after the database is restored. This is parsed as a list.
-    - Example: 'Docutap Attentive'
-               'Docutap eRx Server'
-               'Docutap IM'
-               'Docutap Relentless'
-               'Docutap Seamless'
-               'DtapHL7'
-               'DtapFileTransporter'
-- Services: 
+    - Example: 'DT043-DashboardAS'
+               'DT043-DtapAPI'
+               'DT043-DtapAS'
+               'DT043-DtapAS1'
+               'DT043-SeamlessAS'
+- Services:
     - The services to be stopped and started before and after the database is
       restored. This is parsed as a list.
-    - Example: 'Docutap eRx Server'
-               'Docutap Attentive'
-               'Docutap IM'
-               'Docutap Relentless'
-               'Docutap Seamless'
-               'DtapHL7'
-               'DtapFileTransporter'
-
+    - Example: 'DocuTAP DT043 Messaging'
+               'DocuTAP DT043 Relentless'
+               'DocuTAP DT043 Seamless'
 - Progress Databases: 
     - The databases utilized by OpenEdge. These will be stopped and started 
       before and after the database is restored. This is parsed as a list.
-    - Example: 'DocuTAP'
+    - Example: 'DT043-docutap'
                'DocuTAP-RX'
 - Scrubber: 
     - Database retore and scrub on Database server only
@@ -111,25 +122,21 @@ contain a config.yml file that allows the application to be customized.
       to anonymize the database prior to turning on any application features. 
       The full file path and the paramaters to be passed to the script must be 
       specified.
-    - Example: 'R:\Scrubbers\Scrubber.r'
-               '-param "AWS|NO~DisplayMessages|NO~MachineType|2~ScrubType|3~ManuallyEditControls|NO~AppPath|D:\Progress\Wrk~SysOdbc|docutap"'
-    - might need seed files
-    - Copy alpha prep script to server: example, DT038 - D:\Deploy\Automated_Alpha
-    - Copy database scrubber to server: example, DT038 - D:\Deploy\Automated_Alpha\5.13_Scripts
-    - Copy seed files to server: example, DT038 - D:\Progress\Wrk\*.d
-    - check scrubber log at d:\progress\wrk\db\scrubber.log
+    - Example: File Path: 'D:\Deploy\Workspace\AutomatedAlpha\6.0_Scripts\StartScrubberCommandLine.r'
+               Params: '-param "AWS|YES\~ClearPropathPre|false\~DisplayMessages|NO~MachineType|1\~ScrubType|3\~ManuallyEditControls|NO\~AppPath|D:\Docutap\DT043\Wrk\~SysOdbc|docutap"'
+    - Might need seed files
+    - Copy alpha prep script to server: example, DT043 - D:\Deploy\Workspace\AutomatedAlpha
+    - Copy database scrubber to server: example, DT043 - D:\Deploy\Workspace\AutomatedAlpha\6.0_Scripts
+    - Copy seed files to server: example, DT043 - D:\Docutap\DT043\Wrk\*.d
+    - check scrubber log at dD\Docutap\DT043\wrk\db\scrubber.log
 - Output Log File Path:
     - The directory to which the stdout log files can be written to. This 
       functionality exists in the code, but is not being utilized. 
-    - Example: 'D:\Deploy\Workspace\BackupRestoreOutputLogs\'
-- Error Log File Path:
-    - The directory to which the stderr log files can be written to. This 
-      functionality exists in the code, but is not being utilized. 
-    - Example: 'D:\Deploy\Workspace\BackupRestoreErrorLogs\'
+    - Example: 'D:\Deploy\Workspace\AutomatedAlpha\DT043-BackupRestore.log'
 
 ## Running
 - run ruby script (ruby "path\to\script\script_name.rb")
-	- from CMD: ruby "D:\Deploy\Automated_Alpha\restoreFromBackup.rb"
+	- from CMD: ruby "D:\Deploy\Workspace\AutomatedAlpha\restoreFromBackup.rb"
 - This runs from the db server
 - Run Stop job from CLU to bring site down
 
@@ -140,18 +147,9 @@ config.yml. The application will provide command line output to stdout and
 stderr. The application will abort if certain conditions are met (not enough 
 storage space to extract, can't find database restore file, etc.) and exit with 
 a **(1)** return code.
-    
+
 ## Notes
 TODO:
     - Add pre/post restore scripts to be ran.
     - Add command line paramaters to be passed to override config file.
     - Add classes to contain config file settings.
-    
-    
-    
-    
-    
-    
-    
-    
-    
